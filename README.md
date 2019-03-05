@@ -64,6 +64,7 @@ this.sendMessage({
               width: w, // width of the screen 
               height: h // height of the screen 
             });
+            
 // return message to the mobile to handle map marker click and other events when click map
 handleMessage = (event) => {
     let msgData;
