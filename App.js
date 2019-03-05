@@ -44,7 +44,7 @@ export const formStyles = StyleSheet.create({
 
 
 const INDEX_FILE = require(`./image.html`);
-const MESSAGE_PREFIX = 'react-native-webview-leaflet';
+const MESSAGE_PREFIX = 'react-native-map_2';
 
 class FloorPlan extends Component {
   
