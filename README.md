@@ -31,11 +31,88 @@ width="256">&nbsp;&nbsp;&nbsp;
  ### Use the code
 
  Just fork/clone the repository to your local machine and npm install and react-native run-ios then you're good to go.
+ ```javascript
+<WebView
+    ref={(ref) => { this.webview = ref; }}
+    source={INDEX_FILE}
+    // Optional: a callback that will be called when the map has been loaded
+    onLoadEnd={this.onWebViewLoaded}
+    // handle Message to handle return value of map and event like marker click, map double click
+    onMessage={this.handleMessage}
+    // Optional : called loading state in the start of running this component
+    startInLoadingState={true}
+    // Optional : call function to renderLoading
+    renderLoading={this.renderLoading}
+    // Optional : call function to render error message
+    renderError={this.renderError}
+    javaScriptEnabled={true}
+    onError={this.onError}
+    scalesPageToFit={false}
+    mixedContentMode={'always'}
+  />
+  
+  
+```
+to Communicating react native with webview by using 
+```
+//send message to the map webview , changing the map image to overlay, zooming the map 
+this.sendMessage({
+              zoom: 1, // map zoom 
+              image: "https://i.ibb.co/6XYR35W/Topkapi-Palace-plan.png", // image for overlay inside map
+              locations : facilitiesData, // facilities marker
+              initialFloor : 1, // initial floor
+              width: w, // width of the screen 
+              height: h // height of the screen 
+            });
+// return message to the mobile to handle map marker click and other events when click map
+handleMessage = (event) => {
+    let msgData;
+    try {
+      msgData = JSON.parse(event.nativeEvent.data);
+      if (
+        msgData.hasOwnProperty('prefix') &&
+        msgData.prefix === MESSAGE_PREFIX
+      ) {
+        // if we receive an event, then pass it to the parent by calling
+        // the parent function wtith the same name as the event, and passing
+        // the entire payload as a parameter
+        
+        if (msgData.payload.event === "onResize"){
+          this.setState( { mapLoaded : true } );
+        }
+        
+        if ( this.hasOwnProperty(msgData.payload.event) )
+        {  
+          // . other event like mapmarkerClick
+          this[msgData.payload.event](msgData.payload);
+        }
+        else {
+          this.setState({
+            state: {
+              ...this.state,
+              mapState: {
+                ...this.mapState,
+                ...msgData.payload
+              }
+            }
+          });
+        }
+        // WebViewLeaflet will also need to know of some state changes, such as
+        // when the mapComponent is mounted
+        
+      }
+    } catch (err) {
+      console.warn(err);
+      return;
+    }
+  };
+```
 
 
  ### Tech Stack
 
  * [x] React Native
  * [x] Leaflet
+ * [x] WebView
  * [x] imageOverlay
  * [x] marker
